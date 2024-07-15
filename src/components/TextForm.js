@@ -1,27 +1,34 @@
 import React, { useState } from "react";
+import VoiceAssistant from "./VoiceAssistant";
 
 export default function TextForm(props) {
-  const [text, setText] = useState("");
+  const { text, setText, showAlert, heading, mode } = props;
   const [fontFamily, setFontFamily] = useState("Arial");
+
+  // Copy Text to clipboard
+  const handleCopy = () => {
+    navigator.clipboard.writeText(text);
+    showAlert("Text Copied to clipboard", "success");
+  };
 
   // Convert text to uppercase
   const handleUpClick = () => {
     let newText = text.toUpperCase();
     setText(newText);
-    props.showAlert("Converted to uppercase", "success");
+    showAlert("Converted to uppercase", "success");
   };
 
   // Convert text to lowercase
   const handleLowClick = () => {
     let newText = text.toLowerCase();
     setText(newText);
-    props.showAlert("Converted to lowercase", "success");
+    showAlert("Converted to lowercase", "success");
   };
 
   // Clear text area
   const handleClearClick = () => {
     setText("");
-    props.showAlert("Text Cleared", "success");
+    showAlert("Text Cleared", "success");
   };
 
   // Handle text change
@@ -32,7 +39,7 @@ export default function TextForm(props) {
   // Handle font family change
   const handleFontFamilyChange = (event) => {
     setFontFamily(event.target.value);
-    props.showAlert("Font Changed", "success");
+    showAlert("Font Changed", "success");
   };
 
   // Word count and reading time calculation
@@ -42,8 +49,8 @@ export default function TextForm(props) {
 
   // Combined style object for textarea
   const textAreaStyle = {
-    backgroundColor: props.mode === "dark" ? "grey" : "white",
-    color: props.mode === "dark" ? "white" : "#042743",
+    backgroundColor: mode === "dark" ? "#13466e" : "white",
+    color: mode === "dark" ? "white" : "#042743",
     fontFamily: fontFamily,
   };
 
@@ -52,10 +59,10 @@ export default function TextForm(props) {
       <div
         className="container"
         style={{
-          color: props.mode === "dark" ? "white" : "#042743",
+          color: mode === "dark" ? "white" : "#042743",
         }}
       >
-        <h1>{props.heading}</h1>
+        <h1>{heading}</h1>
 
         <div className="mb-3">
           <textarea
@@ -68,17 +75,42 @@ export default function TextForm(props) {
           ></textarea>
         </div>
 
-        <button className="btn btn-primary mx-2" onClick={handleUpClick}>
+        <button
+          disabled={text.length === 0}
+          className="btn btn-primary mx-2 my-1"
+          onClick={handleUpClick}
+        >
           Convert to Uppercase
         </button>
 
-        <button className="btn btn-primary mx-2" onClick={handleLowClick}>
+        <button
+          disabled={text.length === 0}
+          className="btn btn-primary mx-2 my-1"
+          onClick={handleLowClick}
+        >
           Convert to Lowercase
         </button>
 
-        <button className="btn btn-primary mx-2" onClick={handleClearClick}>
+        <button
+          disabled={text.length === 0}
+          className="btn btn-primary mx-2 my-1"
+          onClick={handleClearClick}
+        >
           Clear
         </button>
+
+        <button
+          disabled={text.length === 0}
+          className="btn btn-primary mx-2 my-1"
+          onClick={handleCopy}
+        >
+          Copy Text
+        </button>
+
+        <VoiceAssistant
+          showAlert={showAlert}
+          onTextRecognized={setText} // Directly set the text recognized
+        />
 
         <select
           className="form-select my-3"
@@ -99,7 +131,7 @@ export default function TextForm(props) {
 
       <div
         className="container my-3"
-        style={{ color: props.mode === "dark" ? "white" : "#042743" }}
+        style={{ color: mode === "dark" ? "white" : "#042743" }}
       >
         <h2>Your Text Summary</h2>
         <p>
@@ -109,9 +141,7 @@ export default function TextForm(props) {
         <p>{readingTime} minutes read</p>
         <h3>Preview</h3>
         <p style={{ fontFamily: fontFamily }}>
-          {text.length > 0
-            ? text
-            : "Enter something in the textbox above to preview it here"}
+          {text.length > 0 ? text : "Nothing to preview!"}
         </p>
       </div>
     </>

@@ -9,6 +9,7 @@ import Alert from "./components/Alert";
 function App() {
   const [mode, setMode] = useState("light");
   const [alert, setAlert] = useState(null);
+  const [text, setText] = useState("");
 
   const showAlert = (message, type) => {
     setAlert({
@@ -32,13 +33,16 @@ function App() {
     }
   };
 
+  const handleTextRecognized = (recognizedText) => {
+    setText(recognizedText);
+  };
+
   return (
     <Router>
       <Navbar title="TextUtils" mode={mode} toggleMode={toggleMode} />
       <Alert alert={alert} />
       <div className="container my-3">
         <Routes>
-          //always use exact keyword before path
           <Route
             exact
             path="/"
@@ -47,10 +51,12 @@ function App() {
                 showAlert={showAlert}
                 heading="Enter the text to analyze"
                 mode={mode}
+                text={text}
+                setText={setText}
               />
             }
           />
-          <Route exact path="/about" element={<About />} />
+          <Route exact path="/about" element={<About mode={mode} />} />
         </Routes>
       </div>
     </Router>
